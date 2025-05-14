@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from 'common/dtos/create-user.dto';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +18,7 @@ export class AuthController {
     return this.authService.loginUser(body.email, body.password);
   }
 
-  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('users')
   getAllUsers() {
     return this.authService.getAllUsers();
