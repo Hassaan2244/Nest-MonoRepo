@@ -3,6 +3,7 @@ import { MessagePattern } from '@nestjs/microservices';
 import { UsersService } from './users.service';
 import { CreateUserDto } from 'common/dtos/create-user.dto';
 import { AppLogger } from 'core/logger/logger.service';
+import { RpcException } from '@nestjs/microservices';
 
 @Controller()
 export class UsersController {
@@ -26,7 +27,7 @@ async login(data: { email: string; password: string }) {
     this.logger.log(`Received login_user TCP message for: ${data.email}`);
   const user = await this.usersService.validateUser(data.email, data.password);
   if (!user) {
-    throw new Error('Invalid credentials');
+   throw new RpcException('Invalid email or password');
   }
 
   const token = await this.usersService.generateToken(user);
