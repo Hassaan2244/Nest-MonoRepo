@@ -1,0 +1,21 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+
+# Logs
+*.log
+logs
+npm-debug.log*
+
+# dotenv files
+.env
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Docker
+*.local
+docker-compose.override.yml
