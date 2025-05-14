@@ -6,6 +6,7 @@ import { User, UserDocument } from './users.schema';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AppLogger } from 'core/logger/logger.service';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class UsersService {
@@ -16,15 +17,18 @@ export class UsersService {
   ) {}
 
   async register(dto: CreateUserDto): Promise<User> {
-  this.logger.log(`Registering user: ${dto.email}`);
-  const hashedPassword = await bcrypt.hash(dto.password, 10);
-  const user = new this.userModel({
-    name: dto.name,
-    email: dto.email,
-    password: hashedPassword,
-  });
-  return user.save();
+  try {
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const user = new this.userModel({ ...dto, password: hashedPassword });
+    return await user.save();
+  } catch (err) {
+    if (err.code === 11000) {
+      throw new RpcException('Email already exists');
+    }
+    throw new RpcException('Registration failed');
+  }
 }
+
 
   async findAll(): Promise<User[]> {
     return this.userModel.find();
